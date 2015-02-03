@@ -1,10 +1,10 @@
 {
   "name": "express-healthcheck",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Super-simple healthcheck middleware for express",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha ./test"
   },
   "repository": {
     "type": "git",
@@ -15,5 +15,11 @@
   "bugs": {
     "url": "https://github.com/lennym/express-healthcheck/issues"
   },
-  "homepage": "https://github.com/lennym/express-healthcheck"
+  "homepage": "https://github.com/lennym/express-healthcheck",
+  "devDependencies": {
+    "chai": "^1.10.0",
+    "mocha": "^2.1.0",
+    "sinon": "^1.12.2",
+    "sinon-chai": "^2.6.0"
+  }
 }
