@@ -19,8 +19,10 @@ describe('express-healthcheck', function () {
         beforeEach(function () {
             req = {};
             res = {
-                json: sinon.stub()
+                json: sinon.stub(),
+                status: sinon.stub()
             };
+            res.status.returns(res);
             next = sinon.stub();
             sinon.stub(process, 'uptime').returns(100);
         });
@@ -40,12 +42,13 @@ describe('express-healthcheck', function () {
 
         it('responds with 200 status', function () {
             healthcheck()(req, res, next);
-            res.json.should.have.been.calledWith(200);
+            res.status.should.have.been.calledWith(200);
         });
 
         it('responds with process uptime as body', function () {
             healthcheck()(req, res, next);
-            res.json.should.have.been.calledWith(200, { uptime: 100 });
+            res.status.should.have.been.calledBefore(res.json);
+            res.json.should.have.been.calledWith({ uptime: 100 });
         });
 
         describe('`test` method', function () {
@@ -57,7 +60,9 @@ describe('express-healthcheck', function () {
                         test: function () { return; }
                     })(req, res, next);
                     res.json.should.have.been.calledOnce;
-                    res.json.should.have.been.calledWith(200);
+                    res.status.should.have.been.calledOnce;
+                    res.status.should.have.been.calledBefore(res.json);
+                    res.status.should.have.been.calledWith(200);
                 });
 
                 it('responds with 500 for truthy return values', function () {
@@ -65,7 +70,9 @@ describe('express-healthcheck', function () {
                         test: function () { return true; }
                     })(req, res, next);
                     res.json.should.have.been.calledOnce;
-                    res.json.should.have.been.calledWith(500);
+                    res.status.should.have.been.calledOnce;
+                    res.status.should.have.been.calledWith(500);
+                    res.status.should.have.been.calledBefore(res.json);
                 });
 
                 it('responds with return value as body for truthy return values', function () {
@@ -73,7 +80,7 @@ describe('express-healthcheck', function () {
                         test: function () { return { error: true }; }
                     })(req, res, next);
                     res.json.should.have.been.calledOnce;
-                    res.json.should.have.been.calledWith(500, { error: true });
+                    res.json.should.have.been.calledWith({ error: true });
                 });
 
             });
@@ -85,7 +92,9 @@ describe('express-healthcheck', function () {
                         test: function (callback) { callback(); }
                     })(req, res, next);
                     res.json.should.have.been.calledOnce;
-                    res.json.should.have.been.calledWith(200);
+                    res.status.should.have.been.calledOnce;
+                    res.status.should.have.been.calledBefore(res.json);
+                    res.status.should.have.been.calledWith(200);
                 });
 
                 it('responds with 500 for truthy callback values', function () {
@@ -93,7 +102,9 @@ describe('express-healthcheck', function () {
                         test: function (callback) { callback(true); }
                     })(req, res, next);
                     res.json.should.have.been.calledOnce;
-                    res.json.should.have.been.calledWith(500);
+                    res.status.should.have.been.calledOnce;
+                    res.status.should.have.been.calledBefore(res.json);
+                    res.status.should.have.been.calledWith(500);
                 });
 
                 it('responds with return value as body for truthy return values', function () {
@@ -101,7 +112,7 @@ describe('express-healthcheck', function () {
                         test: function (callback) { callback({ error: true }); }
                     })(req, res, next);
                     res.json.should.have.been.calledOnce;
-                    res.json.should.have.been.calledWith(500, { error: true });
+                    res.json.should.have.been.calledWith({ error: true });
                 });
 
             });
@@ -113,7 +124,9 @@ describe('express-healthcheck', function () {
                         test: function () {}
                     })(req, res, next);
                     res.json.should.have.been.calledOnce;
-                    res.json.should.have.been.calledWith(200);
+                    res.status.should.have.been.calledOnce;
+                    res.status.should.have.been.calledBefore(res.json);
+                    res.status.should.have.been.calledWith(200);
                 });
 
                 it('responds with 500 for truthy callback values', function () {
@@ -121,7 +134,9 @@ describe('express-healthcheck', function () {
                         test: function () { throw new Error('An error'); }
                     })(req, res, next);
                     res.json.should.have.been.calledOnce;
-                    res.json.should.have.been.calledWith(500);
+                    res.status.should.have.been.calledOnce;
+                    res.status.should.have.been.calledBefore(res.json);
+                    res.status.should.have.been.calledWith(500);
                 });
 
                 it('responds with return value as body for truthy return values', function () {
@@ -129,7 +144,7 @@ describe('express-healthcheck', function () {
                         test: function () { throw new Error('An error'); }
                     })(req, res, next);
                     res.json.should.have.been.calledOnce;
-                    res.json.should.have.been.calledWith(500, new Error('An error'));
+                    res.json.should.have.been.calledWith(new Error('An error'));
                 });
 
             });
@@ -142,7 +157,7 @@ describe('express-healthcheck', function () {
                 healthcheck({
                     healthy: function () { return { everything: 'is ok' }; }
                 })(req, res, next);
-                res.json.should.have.been.calledWithExactly(200, { everything: 'is ok' });
+                res.json.should.have.been.calledWithExactly({ everything: 'is ok' });
             });
 
         });
