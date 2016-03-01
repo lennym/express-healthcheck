@@ -164,4 +164,17 @@ describe('express-healthcheck', function () {
 
     });
 
+    it('integrates with an express server', function (done) {
+      var app = require('express')();
+      var request = require('supertest');
+      app.use('/healthcheck', healthcheck());
+      request(app)
+        .get('/healthcheck')
+        .expect(200)
+        .expect(function (res) {
+          res.body.should.have.property('uptime');
+        })
+        .end(done);
+    });
+
 });
