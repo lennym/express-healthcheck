@@ -18,8 +18,10 @@
   "homepage": "https://github.com/lennym/express-healthcheck",
   "devDependencies": {
     "chai": "^1.10.0",
+    "express": "^4.13.4",
     "mocha": "^2.1.0",
     "sinon": "^1.12.2",
-    "sinon-chai": "^2.6.0"
+    "sinon-chai": "^2.6.0",
+    "supertest": "^1.2.0"
   }
 }
